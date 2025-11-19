@@ -7,6 +7,7 @@ export interface ChessboardProps {
   selectedSquare: string | null;
   legalMoves: string[];
   lastMove: { from: string; to: string } | null;
+  pieces: Record<string, string>;
   onSquareClick: (square: string) => void;
 }
 
@@ -28,9 +29,9 @@ function getSquareColor(fileIndex: number, rankIndex: number) {
 const Chessboard: React.FC<ChessboardProps> = ({
   orientation,
   selectedSquare,
-  // legalMoves and lastMove params are reserved for future use, remove to satisfy linter
-  // legalMoves,
-  // lastMove,
+  legalMoves,
+  lastMove,
+  pieces,
   onSquareClick,
 }) => {
   // Build coordinate ordering based on orientation
@@ -49,7 +50,10 @@ const Chessboard: React.FC<ChessboardProps> = ({
           displayedFiles.map((file, colIdx) => {
             const square = `${file}${rank}`;
             const isSelected = selectedSquare === square;
-            // Note: highlight props not yet implemented
+            const isLegal = legalMoves.includes(square);
+            const isFrom = lastMove?.from === square;
+            const isTo = lastMove?.to === square;
+            const pieceChar = pieces[square] || null;
             return (
               <button
                 tabIndex={0}
@@ -60,19 +64,34 @@ const Chessboard: React.FC<ChessboardProps> = ({
                   getSquareColor(colIdx, rowIdx),
                   isSelected
                     ? "ring-2 ring-yellow-400 z-10"
+                    : isTo
+                    ? "ring-2 ring-amber-400"
+                    : isFrom
+                    ? "ring-2 ring-green-300"
+                    : isLegal
+                    ? "ring-2 ring-blue-200"
                     : "hover:ring-2 hover:ring-blue-300 focus:ring-2 focus:ring-blue-500",
                   "transition-shadow duration-100"
                 ].join(" ")}
                 onClick={() => onSquareClick(square)}
                 style={{ fontFamily: "Geist, ui-sans-serif, sans-serif" }}
               >
-                {/* Placeholder for piece or highlight */}
                 <span
-                  className="absolute inset-0 flex items-center justify-center text-2xl font-bold text-transparent"
+                  className={[
+                    "absolute inset-0 flex items-center justify-center text-2xl md:text-3xl select-none",
+                    pieceChar ? "text-gray-900" : "text-transparent",
+                  ].join(" ")}
+                  role={pieceChar ? "img" : undefined}
+                  aria-label={pieceChar ? `Chess piece ${pieceChar}` : undefined}
                 >
-                  {/* Empty until chess logic integration */}
-                  {/* e.g., ♔ */}
+                  {pieceChar}
                 </span>
+                {/* Legal move "bubble" */}
+                {isLegal && !pieceChar && (
+                  <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="w-4 h-4 bg-blue-400/40 rounded-full"></span>
+                  </span>
+                )}
               </button>
             );
           })
