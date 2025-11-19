@@ -115,7 +115,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
     return (
       <button
         key={`${row}-${col}`}
-        ref={(el) => (cellRefs.current[row][col] = el)}
+        ref={el => { cellRefs.current[row][col] = el; }}
         className={`aspect-square flex items-center justify-center text-2xl sm:text-3xl md:text-4xl font-chess relative select-none focus:outline-none focus-visible:ring-4 focus-visible:ring-primary rounded ${bgClass} ${fgClass} ${borderRing} ${touchPad} transition-colors duration-150`}
         onClick={() => {
           if (!onSelectSquare) return;
@@ -133,7 +133,7 @@ const Chessboard: React.FC<ChessboardProps> = ({
           focus && focus.row === row && focus.col === col ? 0 : -1
         }
         onKeyDown={(e) => handleKeyDown(e, row, col)}
-        aria-selected={sqSelected}
+        aria-selected={sqSelected ? "true" : undefined}
         aria-current={isLastTo ? "step" : undefined}
         aria-describedby={
           isLastTo
