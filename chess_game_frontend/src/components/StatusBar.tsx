@@ -1,22 +1,28 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 
 export interface StatusBarProps {
   currentPlayer: string;
   statusMessage: string;
+  onStatusUpdate?: (msg: string) => void;
 }
 
 // PUBLIC_INTERFACE
 /**
- * Display current player's turn and game status at the bottom of the board.
+ * Display current player's turn and game status at the bottom of the board. Handles ARIA live region.
  */
 const StatusBar: React.FC<StatusBarProps> = ({
   currentPlayer,
   statusMessage,
+  onStatusUpdate,
 }) => {
+  useEffect(() => {
+    if (onStatusUpdate) onStatusUpdate(statusMessage);
+  }, [statusMessage, onStatusUpdate]);
+
   return (
     <div
-      className="flex items-center justify-between mt-2 px-2 py-1 w-full text-sm rounded-md shadow bg-blue-50 border border-blue-100"
+      className="flex items-center justify-between mt-2 px-2 py-1 w-full text-sm rounded-md shadow bg-white border border-blue-200"
       aria-live="polite"
       aria-atomic="true"
       role="status"

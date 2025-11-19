@@ -29,21 +29,29 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
-/* Ocean gradient utility */
-.bg-ocean-gradient {
-  background: linear-gradient(130deg, #2563EB19 0%, #f9fafb 100%);
-}
-
 body {
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
   background: var(--color-background);
   min-height: 100vh;
 }
 
+/* Ocean gradient utility */
+.bg-ocean-gradient {
+  background: linear-gradient(130deg, #2563EB19 0%, #f9fafb 100%);
+}
+
 /* Accessible focus ring helper */
 :focus-visible {
-  outline: 2px solid var(--color-primary);
+  outline: 3px solid #2563eb !important;
   outline-offset: 2px;
+  transition: outline 0.08s;
+}
+
+button,
+input[type="text"],
+[role="button"] {
+  min-width: 44px;
+  min-height: 44px;
 }
 
 button {
@@ -56,3 +64,42 @@ input, button, select, textarea {
   color: inherit;
 }
 
+/* Responsive: force chessboard to never overflow on mobile */
+.chessboard-responsive {
+  width: 100vw;
+  max-width: min(96vw, 90vh);
+}
+
+/* Enhance color contrast for primary/secondary backgrounds */
+.bg-primary {
+  background-color: #2563eb !important;
+  color: #fff !important;
+}
+.bg-secondary {
+  background-color: #f59e0b !important;
+  color: #111827 !important;
+}
+.bg-success {
+  background-color: #f59e0b !important;
+  color: #111827 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2563eb;
+}
+::-webkit-scrollbar {
+  background: #e0e7ef;
+  width: 8px;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

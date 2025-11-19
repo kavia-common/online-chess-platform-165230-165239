@@ -11,11 +11,14 @@ export default function HomePage() {
   // The chess logic here uses FEN and move history.
   // We'll add a simple FEN+move state
   const [fen, setFen] = useState<string>(START_POSITION_FEN);
-  // Match MoveList's Move type: { from: string; to: string; san?: string; number: number }
   type Move = { from: string; to: string; san?: string; number: number };
   const [moves, setMoves] = useState<Move[]>([]);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+  const [boardStatusMsg, setBoardStatusMsg] = useState<string>("Ready");
+
+  // Mock: Always white's turn at root
+  const currentPlayer = (moves.length % 2 === 0) ? "white" : "black";
 
   // Handlers for control buttons
   function handleNewGame() {
@@ -23,10 +26,10 @@ export default function HomePage() {
     setMoves([]);
     setCanUndo(false);
     setCanRedo(false);
+    setBoardStatusMsg("Game reset. White's turn.");
   }
 
   function handleUndo() {
-    // Placeholder: track moves
     if (moves.length > 0) {
       const newMoves = moves.slice(0, -1);
       setMoves(newMoves);
@@ -34,7 +37,7 @@ export default function HomePage() {
     }
   }
   function handleRedo() {
-    // Placeholder
+    // Placeholder for redo
   }
 
   function handleSetFEN(fenStr: string) {
@@ -42,14 +45,32 @@ export default function HomePage() {
     setMoves([]);
     setCanUndo(false);
     setCanRedo(false);
+    setBoardStatusMsg("Board imported from FEN. White's turn.");
+  }
+
+  // ARIA live update from StatusBar
+  function handleStatusUpdate(msg: string) {
+    setBoardStatusMsg(msg);
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-tr from-blue-500/10 to-gray-50 flex flex-col items-center">
+    <main
+      className="min-h-screen bg-gradient-to-tr from-blue-500/10 to-gray-50 flex flex-col items-center"
+      aria-label="Chess game main"
+      tabIndex={-1}
+      id="main-chess-game"
+    >
       <div className="w-full max-w-2xl flex flex-col space-y-4 mt-10 items-center">
-        <StatusBar currentPlayer="white" statusMessage="Ready" />
-        <Chessboard fen={fen} moves={moves} />
-        <MoveList moves={moves} />
+        <StatusBar
+          currentPlayer={currentPlayer}
+          statusMessage={boardStatusMsg}
+          onStatusUpdate={handleStatusUpdate}
+        />
+        <Chessboard
+          fen={fen}
+          statusMessage={boardStatusMsg}
+        />
+        <MoveList moves={moves} onMoveClick={() => {}} />
         <GameControls
           onNewGame={handleNewGame}
           onUndo={handleUndo}
@@ -59,6 +80,16 @@ export default function HomePage() {
           currentFEN={fen}
           onSetFEN={handleSetFEN}
         />
+      </div>
+      {/* Offscreen ARIA live summary */}
+      <div
+        className="sr-only"
+        aria-live="assertive"
+        aria-atomic="true"
+        id="screenreader-status"
+        tabIndex={-1}
+      >
+        {boardStatusMsg}
       </div>
     </main>
   );
